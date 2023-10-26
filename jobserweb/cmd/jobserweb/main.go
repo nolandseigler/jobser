@@ -12,22 +12,26 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/nolandseigler/jobser/jobserweb/internal/template"
 )
 
 func main() {
 	// Setup
 	e := echo.New()
-	e.Logger.SetLevel(log.INFO)
+	e.Logger.SetLevel(log.DEBUG)
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	e.Use(echoprometheus.NewMiddleware("jobserweb"))
 	e.GET("/metrics", echoprometheus.NewHandler())
 
+	e.Renderer = template.New()
 
+	e.GET("/signup", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "signup", []string{"fucker"})
+	})
 
-	e.GET("/", func(c echo.Context) error {
-		time.Sleep(5 * time.Second)
-		return c.JSON(http.StatusOK, "OK")
+	e.GET("/dashboard", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "dashboard", "")
 	})
 
 	// Start server

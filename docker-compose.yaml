@@ -7,12 +7,20 @@ services:
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
+  wordser:
+    build:
+      context: ./wordser
+      dockerfile: Dockerfile
+    image: wordser:compose
+    ports:
+    - "127.0.0.1:8981:8080"
   web:
     depends_on:
       - db
+      - wordser
     build:
-      context: ./jobserweb
+      context: ./wordserweb
       dockerfile: Dockerfile
-    image: jobserweb:compose
+    image: wordserweb:compose
     ports:
-    - "127.0.0.1:8989:8080"
+    - "127.0.0.1:8980:8080"

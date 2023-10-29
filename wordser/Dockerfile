@@ -17,11 +17,23 @@ RUN cargo build --locked --release
 
 
 FROM debian:bookworm-slim AS final
+ARG APP_NAME
+
+ARG UID=10001
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    appuser
+USER appuser
 
 WORKDIR /
 
-COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=build /app/target/release/$APP_NAME /wordser
+COPY --from=build --chown=${UID}:${UID} /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build --chown=${UID}:${UID} /app/target/release/${APP_NAME} /wordser
 
 EXPOSE 8080
 

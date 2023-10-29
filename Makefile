@@ -3,10 +3,10 @@
 .PHONY: up up-d down down-v
 
 up:
-	docker-compose up --build
+	docker-compose up --build --force-recreate  --remove-orphans
 
 up-d:
-	docker-compose up --build -d
+	docker-compose up --build --force-recreate  --remove-orphans -d
 
 down:
 	docker-compose down

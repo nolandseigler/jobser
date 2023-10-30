@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -31,6 +33,31 @@ func main() {
 	})
 
 	e.GET("/dashboard", func(c echo.Context) error {
+
+		requestURL := "http://wordser:8080/echo"
+		req, err := http.NewRequest(
+			http.MethodPost,
+			requestURL,
+			bytes.NewReader([]byte(`{"text": "A message from CS361"}`)),
+		)
+		if err != nil {
+			return c.JSON(500, fmt.Sprintf(`{"err": "%s"}`, err))
+		}
+		
+		req.Header.Set("Content-Type", "application/json")
+
+		client := http.Client{
+			Timeout: 30 * time.Second,
+		}
+
+		e.Logger.Info("sending message to webser service!")
+		res, err := client.Do(req)
+		if err != nil {
+			return c.JSON(500, fmt.Sprintf(`{"err": "%s"}`, err))
+		}
+
+		e.Logger.Info(res)
+		
 		return c.Render(http.StatusOK, "dashboard", "")
 	})
 

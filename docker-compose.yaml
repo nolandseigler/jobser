@@ -6,7 +6,12 @@ services:
     image: postgres:16
     restart: always
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: wordser
+      POSTGRES_DB: wordser
+      POSTGRES_USER: wordser
+    volumes:
+      - db-data:/var/lib/posgresql/data
+      - ./docker/initdb.d:/docker-entrypoint-initdb.d/
   wordser:
     build:
       context: ./wordser
@@ -24,3 +29,6 @@ services:
     image: wordserweb:compose
     ports:
     - "127.0.0.1:8980:8080"
+
+volumes:
+  db-data:

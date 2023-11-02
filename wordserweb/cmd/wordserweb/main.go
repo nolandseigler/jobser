@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,6 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/nolandseigler/wordser/wordserweb/internal/handlers"
 	"github.com/nolandseigler/wordser/wordserweb/internal/template"
 )
 
@@ -28,13 +27,8 @@ func main() {
 
 	e.Renderer = template.New()
 
-	e.GET("/signup", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "signup", []string{"fucker"})
-	})
-
-	e.GET("/dashboard", func(c echo.Context) error {	
-		return c.Render(http.StatusOK, "dashboard", "")
-	})
+	e.GET("/signup", handlers.GetSignupHandler)
+	e.GET("/dashboard", handlers.GetDashboardHandler)
 
 	// Start server
 	go func() {

@@ -37,7 +37,7 @@ func PostSignupHandler(auth Auther, db DBer) func(c echo.Context) error {
 		c.SetCookie(&http.Cookie{
 			Name: "session_token",
 			Value: jwt,
-			Expires: time.Now().UTC().Add(15 * time.Minute),
+			Expires: time.Now().UTC().Add(60 * time.Minute),
 		})
 
 		return c.String(http.StatusFound, "")

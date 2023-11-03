@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/nolandseigler/wordser/wordserweb/internal/auth"
 	"github.com/nolandseigler/wordser/wordserweb/internal/handlers"
 	"github.com/nolandseigler/wordser/wordserweb/internal/template"
 )
@@ -24,6 +26,11 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(echoprometheus.NewMiddleware("wordserweb"))
 	e.GET("/metrics", echoprometheus.NewHandler())
+
+	// init and drop in storage.
+	auth.New(auth.Config{}, NewStore(), )
+	// this going to trash prom??
+	e.Use()
 
 	e.Renderer = template.New()
 
@@ -44,5 +51,31 @@ func main() {
 	defer cancel()
 	if err := e.Shutdown(ctx); err != nil {
 		e.Logger.Fatal(err)
+	}
+}
+
+type TempKVStore struct {
+	store *sync.Map
+}
+
+func(t *TempKVStore) Insert(key string, value string) error {
+	t.store.Store(key, value)
+	return nil
+}
+func(t *TempKVStore) Delete(key string) error {
+	t.store.Delete(key)
+	return nil
+}
+func(t *TempKVStore) Get(key string) (string, bool) {
+	if val, ok := t.store.Load(key); ok {
+		val, ok := val.(string)
+		return val, ok
+	}
+	return "", false
+}
+
+func NewStore() *TempKVStore {
+	return &TempKVStore{
+		&sync.Map{},
 	}
 }

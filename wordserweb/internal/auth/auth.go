@@ -4,11 +4,13 @@ import (
 	"context"
 	"crypto/rsa"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
 	jwtlib "github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 )
 
 type Auth struct {
@@ -76,8 +78,8 @@ func (a *Auth) storeSession(ctx context.Context, jti uuid.UUID) error {
 	return nil
 }
 
-// isSessionValid -> KeyValStorer.Get(jti)
-func (a *Auth) isSessionValid(ctx context.Context, jti uuid.UUID) error {
+// validateSession -> KeyValStorer.Get(jti)
+func (a *Auth) validateSession(ctx context.Context, jti uuid.UUID) error {
 	if 	_, ok := a.kvStore.Get(jti.String()); !ok {
 		return fmt.Errorf("no valid session")
 	}
@@ -149,7 +151,7 @@ func (a *Auth) Login(ctx context.Context, username string, password string) (str
 
 // refreshJWT -> part of validateJWT. if validJWT will expire in `n` minutes then NewJWT
 func (a *Auth) refreshJWT(ctx context.Context, jti uuid.UUID, username string) (string, uuid.UUID, error) {
-	if err := a.kvStore.Delete(jti.String()); err != nil {
+	if err := a.destroySesion(ctx, jti); err != nil {
 		return "", uuid.Nil, err
 	}
 	jwt, jti, err := a.newJWT(ctx, username)
@@ -188,6 +190,11 @@ func (a *Auth) validateJWT(ctx context.Context, jwt string, refresh bool) (strin
 	if err != nil {
 		return "", uuid.Nil, err
 	}
+
+	if err := a.validateSession(ctx, returnJti); err != nil {
+		return "", uuid.Nil, err
+	}
+
 	returnJwt := jwt
 
 	if refresh && expiry.Time.After(time.Now().UTC().Add(5 * time.Minute)) {
@@ -220,10 +227,39 @@ func (a *Auth) Logout(ctx context.Context, jwt string) error {
 
 
 // ValidateJWT -> includes using redis storage to check session. Validate and call refresh if close to expiry
-func (a *Auth) ValidateJWT(ctx context.Context, jwt string) (string, error) {
-	jwt, _, err := a.validateJWT(ctx, jwt, true)
-	if err != nil {
-		return "", err
+func (a *Auth) ValidateJWTMiddleWare(next echo.HandlerFunc) echo.HandlerFunc {
+
+	return func(c echo.Context) error {
+		if c.Path() == "/metrics" {
+			return next(c)
+		}
+
+		sessionCookie, err := c.Cookie("session_token")
+		if err != nil {
+			if err == http.ErrNoCookie {
+				return echo.NewHTTPError(http.StatusUnauthorized, "no credentials")
+			}
+			return echo.NewHTTPError(http.StatusUnauthorized, "invalid credentials")
+		}
+		jwt, _, err := a.validateJWT(c.Request().Context(), sessionCookie.Value, true)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "invalid credentials")
+		}
+
+		// TODO: If I end up doing perms per endpoint then put a sync.Map in *Auth that maps endpoint to all []Perms
+		// or something.
+
+		if sessionCookie.Value == jwt {
+			return next(c)
+		}
+		// new jwt replace cookie.
+		c.SetCookie(&http.Cookie{
+			Name: "session_token",
+			Value: jwt,
+			Expires: time.Now().UTC().Add(60 * time.Minute),
+		})
+
+
+		return next(c)
 	}
-	return jwt, err
 }

@@ -112,7 +112,7 @@ func (a *Auth) mintJWT(ctx context.Context, userCtx UserContext) (string, uuid.U
 }
 
 // newJWT -> mintJwt, and storeSession
-func (a *Auth) newJWT(ctx context.Context, username string) (string, error) {
+func (a *Auth) newJWT(ctx context.Context, username string) (string, uuid.UUID, error) {
 	// TODO: Lookup user context
 	jwt, jti, err := a.mintJWT(
 		ctx,
@@ -121,14 +121,14 @@ func (a *Auth) newJWT(ctx context.Context, username string) (string, error) {
 		},
 	)
 	if err != nil {
-		return "", nil
+		return "", uuid.Nil, nil
 	}
 
 	if err := a.storeSession(ctx, jti); err != nil {
-		return "", nil
+		return "", uuid.Nil, nil
 	}
 
-	return jwt, nil
+	return jwt, jti, nil
 }
 
 // Login -> Use db to check user & pass then NewJWT
@@ -138,7 +138,7 @@ func (a *Auth) Login(ctx context.Context, username string, password string) (str
 		return "", err
 	}
 
-	jwt, err := a.newJWT(ctx, username)
+	jwt, _, err := a.newJWT(ctx, username)
 
 	if err != nil {
 		return "", err
@@ -147,14 +147,83 @@ func (a *Auth) Login(ctx context.Context, username string, password string) (str
 	return jwt, nil
 }
 
+// refreshJWT -> part of validateJWT. if validJWT will expire in `n` minutes then NewJWT
+func (a *Auth) refreshJWT(ctx context.Context, jti uuid.UUID, username string) (string, uuid.UUID, error) {
+	if err := a.kvStore.Delete(jti.String()); err != nil {
+		return "", uuid.Nil, err
+	}
+	jwt, jti, err := a.newJWT(ctx, username)
+
+	if err != nil {
+		return "", uuid.Nil, err
+	}
+
+	return jwt, jti, nil
+}
+
 // validateJWT -> does the work but isnt the public function. takes an argument refresh: bool so we can use this in logout without refresh.
+func (a *Auth) validateJWT(ctx context.Context, jwt string, refresh bool) (string, uuid.UUID, error) {
+	token, err := jwtlib.ParseWithClaims(jwt, &JWTClaims{}, func(token *jwtlib.Token) (interface{}, error) {
+		return a.pubKey, nil
+	})
+	if err != nil {
+		return "", uuid.Nil, err
+	}
 
-// // Logout -> this is not behind ValidateJWT middleware func so we call validateJWT with refresh = false
-// // no jwt no logout.
-// Logout(ctx context.Context, jwt string) (string, error)
+	if !token.Valid {
+		return "", uuid.Nil, fmt.Errorf("invalid token;")
+	}
 
-// refreshJWT -> part of ValidateJWT. if validJWT will expire in `n` minutes then NewJWT
+	claims, ok := token.Claims.(*JWTClaims)
+	if !ok {
+		return "", uuid.Nil, fmt.Errorf("invalid token claims;")
+	}
+
+	expiry, err := claims.RegisteredClaims.GetExpirationTime()
+	if err != nil {
+		return "", uuid.Nil, err
+	}
+
+	returnJti, err := uuid.Parse(claims.RegisteredClaims.ID)
+	if err != nil {
+		return "", uuid.Nil, err
+	}
+	returnJwt := jwt
+
+	if refresh && expiry.Time.After(time.Now().UTC().Add(5 * time.Minute)) {
+		subj, err := claims.RegisteredClaims.GetSubject()
+		if err != nil {
+			return "", uuid.Nil, err
+		}
+		
+		returnJwt, returnJti, err = a.refreshJWT(ctx, returnJti, subj)
+
+		if err != nil {
+			return "", uuid.Nil, err
+		}
+		// success continue to return
+	}
+
+	return returnJwt, returnJti, nil
+}
+
+// Logout -> this is not behind ValidateJWT middleware func so we call validateJWT with refresh = false
+// no jwt no logout.
+func (a *Auth) Logout(ctx context.Context, jwt string) error {
+	_, _, err := a.validateJWT(ctx, jwt, false)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 
 
 // ValidateJWT -> includes using redis storage to check session. Validate and call refresh if close to expiry
+func (a *Auth) ValidateJWT(ctx context.Context, jwt string) (string, error) {
+	jwt, _, err := a.validateJWT(ctx, jwt, true)
+	if err != nil {
+		return "", err
+	}
+	return jwt, err
+}

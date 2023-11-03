@@ -135,9 +135,13 @@ func (a *Auth) newJWT(ctx context.Context, username string) (string, uuid.UUID, 
 
 // Login -> Use db to check user & pass then NewJWT
 func (a *Auth) Login(ctx context.Context, username string, password string) (string, error) {
-	err := a.userVerifier.Verify(username, password)
+	verified, err := a.userVerifier.IsUserAccountPassword(ctx, username, password)
 	if err != nil {
 		return "", err
+	}
+
+	if !verified {
+		return "", fmt.Errorf("invalid username/password or user does not exist")
 	}
 
 	jwt, _, err := a.newJWT(ctx, username)

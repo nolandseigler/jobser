@@ -15,6 +15,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/nolandseigler/wordser/wordserweb/internal/auth"
 	"github.com/nolandseigler/wordser/wordserweb/internal/handlers"
+	"github.com/nolandseigler/wordser/wordserweb/internal/storage/postgres"
 	"github.com/nolandseigler/wordser/wordserweb/internal/template"
 )
 
@@ -27,8 +28,13 @@ func main() {
 	e.Use(echoprometheus.NewMiddleware("wordserweb"))
 	e.GET("/metrics", echoprometheus.NewHandler())
 
+	ctx := context.Background()
 	// init and drop in storage.
-	auth.New(auth.Config{}, NewStore(), )
+	db, err := postgres.New(ctx, postgres.Config{})
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+	auth.New(auth.Config{}, NewStore(), db)
 	// this going to trash prom??
 	e.Use()
 
@@ -58,15 +64,15 @@ type TempKVStore struct {
 	store *sync.Map
 }
 
-func(t *TempKVStore) Insert(key string, value string) error {
+func (t *TempKVStore) Insert(key string, value string) error {
 	t.store.Store(key, value)
 	return nil
 }
-func(t *TempKVStore) Delete(key string) error {
+func (t *TempKVStore) Delete(key string) error {
 	t.store.Delete(key)
 	return nil
 }
-func(t *TempKVStore) Get(key string) (string, bool) {
+func (t *TempKVStore) Get(key string) (string, bool) {
 	if val, ok := t.store.Load(key); ok {
 		val, ok := val.(string)
 		return val, ok

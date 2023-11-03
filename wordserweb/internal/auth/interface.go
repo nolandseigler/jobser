@@ -1,5 +1,7 @@
 package auth
 
+import "context"
+
 type KeyValStorer interface {
 	Insert(key string, value string) error
 	Delete(key string) error
@@ -7,5 +9,5 @@ type KeyValStorer interface {
 }
 
 type UserVerifier interface {
-	Verify(username string, password string) error
+	IsUserAccountPassword(ctx context.Context, username string, password string) (bool, error)
 }

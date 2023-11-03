@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -15,26 +16,30 @@ type PostSignupRequest struct {
 	Password string `json:"password" form:"password" query:"password"`
 }
 
-type PostSignupResponse struct {
-	Username    string `json:"username" form:"username" query:"username"`
-	AccessToken string `json:"access_token" form:"access_token" query:"access_token"`
-}
-
-func PostSignupHandler() func(c echo.Context) error {
+func PostSignupHandler(auth Auther, db DBer) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		u := new(PostSignupRequest)
 		if err := c.Bind(u); err != nil {
 			return c.String(http.StatusBadRequest, "bad request")
 		}
-		username := "TODO: From DB"
-		accessToken := "TODO: Mint JWT"
 
-		return c.JSON(
-			http.StatusCreated,
-			PostSignupResponse{
-				Username:    username,
-				AccessToken: accessToken,
-			},
-		)
+		_, err := db.CreateUserAccount(c.Request().Context(), u.Username, u.Password)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, "failed to create user account")
+		}
+
+		jwt, err := auth.Login(c.Request().Context(), u.Username, u.Password)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, "failed to login")
+		}
+
+		// Set initial cookie. Auth middlewares in other endpoints keep it refreshed
+		c.SetCookie(&http.Cookie{
+			Name: "session_token",
+			Value: jwt,
+			Expires: time.Now().UTC().Add(15 * time.Minute),
+		})
+
+		return c.String(http.StatusFound, "")
 	}
 }

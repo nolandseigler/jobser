@@ -4,6 +4,8 @@ go 1.21.3
 
 require (
 	github.com/georgysavva/scany/v2 v2.0.0
+	github.com/golang-jwt/jwt/v5 v5.0.0
+	github.com/google/uuid v1.4.0
 	github.com/jackc/pgx/v5 v5.4.3
 	github.com/labstack/echo-contrib v0.15.0
 	github.com/labstack/echo/v4 v4.11.2

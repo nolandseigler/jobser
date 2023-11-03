@@ -9,3 +9,7 @@ type DBer interface {
 	CreateUserAccount(ctx context.Context, username string, password string) (*postgres.UserAccount, error)
 	GetUserAccount(ctx context.Context, username string) (*postgres.UserAccount, error)
 }
+
+type Auther interface {
+	Login(ctx context.Context, username string, password string) (string, error)
+}

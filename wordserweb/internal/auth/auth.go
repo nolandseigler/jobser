@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	jwtlib "github.com/golang-jwt/jwt/v5"
@@ -14,9 +15,9 @@ import (
 )
 
 type Auth struct {
-	pubKey     *rsa.PublicKey
-	signingKey *rsa.PrivateKey
-	kvStore    KeyValStorer
+	pubKey       *rsa.PublicKey
+	signingKey   *rsa.PrivateKey
+	kvStore      KeyValStorer
 	userVerifier UserVerifier
 }
 
@@ -42,9 +43,9 @@ func New(ctx context.Context, config Config, kvStore KeyValStorer, userVerifier 
 	}
 
 	return &Auth{
-		pubKey:     pubKey,
-		signingKey: signingKey,
-		kvStore:    kvStore,
+		pubKey:       pubKey,
+		signingKey:   signingKey,
+		kvStore:      kvStore,
 		userVerifier: userVerifier,
 	}, nil
 }
@@ -80,7 +81,7 @@ func (a *Auth) storeSession(ctx context.Context, jti uuid.UUID) error {
 
 // validateSession -> KeyValStorer.Get(jti)
 func (a *Auth) validateSession(ctx context.Context, jti uuid.UUID) error {
-	if 	_, ok := a.kvStore.Get(jti.String()); !ok {
+	if _, ok := a.kvStore.Get(jti.String()); !ok {
 		return fmt.Errorf("no valid session")
 	}
 	return nil
@@ -201,12 +202,12 @@ func (a *Auth) validateJWT(ctx context.Context, jwt string, refresh bool) (strin
 
 	returnJwt := jwt
 
-	if refresh && expiry.Time.After(time.Now().UTC().Add(5 * time.Minute)) {
+	if refresh && expiry.Time.After(time.Now().UTC().Add(5*time.Minute)) {
 		subj, err := claims.RegisteredClaims.GetSubject()
 		if err != nil {
 			return "", uuid.Nil, err
 		}
-		
+
 		returnJwt, returnJti, err = a.refreshJWT(ctx, returnJti, subj)
 
 		if err != nil {
@@ -228,13 +229,14 @@ func (a *Auth) Logout(ctx context.Context, jwt string) error {
 	return nil
 }
 
-
-
 // ValidateJWT -> includes using redis storage to check session. Validate and call refresh if close to expiry
 func (a *Auth) ValidateJWTMiddleWare(next echo.HandlerFunc) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		if c.Path() == "/metrics" || c.Path() == "/signup" {
+		if c.Path() == "/metrics" ||
+			c.Path() == "/signup" ||
+			c.Path() == "/login" ||
+			strings.HasPrefix(c.Path(), "/static") {
 			return next(c)
 		}
 
@@ -258,11 +260,10 @@ func (a *Auth) ValidateJWTMiddleWare(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		// new jwt replace cookie.
 		c.SetCookie(&http.Cookie{
-			Name: "session_token",
-			Value: jwt,
+			Name:    "session_token",
+			Value:   jwt,
 			Expires: time.Now().UTC().Add(60 * time.Minute),
 		})
-
 
 		return next(c)
 	}

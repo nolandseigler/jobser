@@ -2,20 +2,20 @@
 
 {{define "content"}}
 <h1 class="d-flex justify-content-center">
-    Create your wordser Account
+    Welcome to Wordser
 </h1>
 <h2 class="d-flex justify-content-center">
     Experience a modern, integrated text analysis platform solution!
 </h2>
 
-<form id="createAccountForm" action="/signup" method="post" class="d-flex justify-content-center">
+<form id="loginForm" action="/login" method="post" class="d-flex justify-content-center">
     <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" name="username" id="username">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" class="form-control" name="username" id="username">
     </div>
     <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" name="password" id="password">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" name="password" id="password">
     </div>
     <div class="mb-3">
         <label for="confirmPassword" class="form-label">Confirm Password</label>
@@ -23,5 +23,4 @@
     </div>
     <button type="submit" class="btn btn-primary">Create</button>
 </form>
-
 {{end}}

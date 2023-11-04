@@ -15,6 +15,7 @@ import (
 	"github.com/labstack/gommon/log"
 	authpkg "github.com/nolandseigler/wordser/wordserweb/internal/auth"
 	"github.com/nolandseigler/wordser/wordserweb/internal/handlers"
+	"github.com/nolandseigler/wordser/wordserweb/internal/static"
 	"github.com/nolandseigler/wordser/wordserweb/internal/storage/postgres"
 	"github.com/nolandseigler/wordser/wordserweb/internal/template"
 )
@@ -27,6 +28,10 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(echoprometheus.NewMiddleware("wordserweb"))
 	e.GET("/metrics", echoprometheus.NewHandler())
+
+	e.Renderer = template.New()
+	static.RegisterStaticFS(e)
+	
 
 	ctx := context.Background()
 
@@ -51,10 +56,11 @@ func main() {
 	// this going to trash prom??
 	e.Use(auth.ValidateJWTMiddleWare)
 
-	e.Renderer = template.New()
 
 	e.GET("/signup", handlers.GetSignupHandler)
 	e.POST("/signup", handlers.PostSignupHandler(auth, db))
+	e.GET("/login", handlers.GetLoginHandler)
+	e.POST("/login", handlers.PostLoginHandler(auth, db))
 	e.GET("/dashboard", handlers.GetDashboardHandler)
 
 	// Start server

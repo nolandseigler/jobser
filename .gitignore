@@ -18,3 +18,5 @@
 # vendor/
 .cache
 target/
+
+docker/etc/wordserweb/keys

@@ -70,10 +70,6 @@ func (d *DB) GetUserAccount(ctx context.Context, username string) (*UserAccount,
 
 func (d *DB) CreateUserAccount(ctx context.Context, username string, password string) (*UserAccount, error) {
 
-	passwordLen := len(password)
-	if passwordLen < 12 || passwordLen > 60 {
-		return nil, fmt.Errorf("password length must be >= 12 and <= 60; password length: %d", passwordLen)
-	}
 	tx, err := d.pool.Begin(ctx)
 	defer tx.Rollback(ctx)
 	if err != nil {
@@ -108,20 +104,17 @@ func (d *DB) IsUserAccountPassword(ctx context.Context, username string, passwor
 		ctx,
 		d.pool,
 		&users,
-		fmt.Sprintf(
-			`SELECT username FROM auth.user_account WHERE username = $1 and password = crypt($2, %s)`,
-			genSaltSQL,
-		),
+		`SELECT username FROM auth.user_account WHERE username = $1 and password = crypt($2, password)`,
 		username,
+		password,
 	)
 	if err != nil {
 		return false, err
 	}
-
 	usersLen := len(users)
 
 	if usersLen == 0 {
-		return false, errors.New("user not found")
+		return false, errors.New("invalid username or password")
 	}
 	if usersLen > 1 {
 		return false, errors.New("more than one user found")

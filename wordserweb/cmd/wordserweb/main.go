@@ -13,7 +13,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	"github.com/nolandseigler/wordser/wordserweb/internal/auth"
+	authpkg "github.com/nolandseigler/wordser/wordserweb/internal/auth"
 	"github.com/nolandseigler/wordser/wordserweb/internal/handlers"
 	"github.com/nolandseigler/wordser/wordserweb/internal/storage/postgres"
 	"github.com/nolandseigler/wordser/wordserweb/internal/template"
@@ -29,18 +29,32 @@ func main() {
 	e.GET("/metrics", echoprometheus.NewHandler())
 
 	ctx := context.Background()
-	// init and drop in storage.
-	db, err := postgres.New(ctx, postgres.Config{})
+
+	dbCfg, err := postgres.ConfigFromEnv()
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
-	auth.New(auth.Config{}, NewStore(), db)
+	db, err := postgres.New(ctx, dbCfg)
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+
+	authCfg, err := authpkg.ConfigFromEnv()
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+
+	auth, err := authpkg.New(ctx, authCfg, NewStore(), db)
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
 	// this going to trash prom??
-	e.Use()
+	e.Use(auth.ValidateJWTMiddleWare)
 
 	e.Renderer = template.New()
 
 	e.GET("/signup", handlers.GetSignupHandler)
+	e.POST("/signup", handlers.PostSignupHandler(auth, db))
 	e.GET("/dashboard", handlers.GetDashboardHandler)
 
 	// Start server

@@ -20,7 +20,7 @@ type Auth struct {
 	userVerifier UserVerifier
 }
 
-func New(config Config, kvStore KeyValStorer, userVerifier UserVerifier) (*Auth, error) {
+func New(ctx context.Context, config Config, kvStore KeyValStorer, userVerifier UserVerifier) (*Auth, error) {
 	signBytes, err := os.ReadFile(config.PrivKeyPath)
 	if err != nil {
 		return nil, err
@@ -234,7 +234,7 @@ func (a *Auth) Logout(ctx context.Context, jwt string) error {
 func (a *Auth) ValidateJWTMiddleWare(next echo.HandlerFunc) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		if c.Path() == "/metrics" {
+		if c.Path() == "/metrics" || c.Path() == "/signup" {
 			return next(c)
 		}
 

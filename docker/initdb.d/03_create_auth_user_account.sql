@@ -1,4 +1,4 @@
-INSERT into user_account (
+INSERT into auth.user_account (
     username,
     password
 )

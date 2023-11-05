@@ -5,23 +5,101 @@
     Wordser Dashboard
 </h1>
 
-<div class="d-flex flex-column justify-content-center mb-3">
+<div class="d-flex flex-row justify-content-around mb-3">
     <div class="flex-column align-self-start justify-content-start mb-3">
-        <div class="p-2">Flex item 1</div>
-        <div class="p-2">Flex item 2</div>
-        <div class="p-2">Flex item 3</div>
+        <h3 class="p-2">Saved Results</h3>
+        <div class="card text-bg-primary border-dark" style="width: 18rem;">
+            <div class="card-header">
+                Lorem Ipsum Some Saved Analysis 1
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">An item</li>
+                <li class="list-group-item">A second item</li>
+                <li class="list-group-item">A third item</li>
+            </ul>
+        </div>
+        <div class="card text-bg-primary border-dark" style="width: 18rem;">
+            <div class="card-header">
+                Lorem Ipsum Some Saved Analysis 2
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">An item</li>
+                <li class="list-group-item">A second item</li>
+                <li class="list-group-item">A third item</li>
+            </ul>
+        </div>
     </div>
 
-    <div class="flex-row align-self-center justify-content-center mb-3">
-        <div class="p-2">Flex item 4</div>
-        <div class="p-2">Flex item 5</div>
-        <div class="p-2">Flex item 6</div>
+    <div class="flex-column align-self-center justify-content-start mb-3">
+        <h3 class="p-2">Analyze English Text</h3>
+        <form id="analyze-form" action="/analyze" method="post" class="d-flex justify-content-center">
+            <ul class="list-unstyled">
+                <li>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="summarzie" name="summarize" checked>
+                        <label class="form-check-label" for="summarzie">Summarize</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="sentiment" name="sentiment">
+                        <label class="form-check-label" for="sentiment">Sentiment Analysis</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="keyword" name="keyword">
+                        <label class="form-check-label" for="keyword">Keyword Extraction</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="unmask" name="unmask">
+                        <label class="form-check-label" for="unmask">Unmask Tokens</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="mb-3">
+                        <label for="analyze-text" class="form-label">Text To Analyze</label>
+                        <textarea class="form-control" id="analyze-text" name="analyze-text" rows="3"></textarea>
+                    </div>
+                </li>
+                <li>
+                    <button type="submit" class="btn btn-primary">Analyze</button>
+                </li>
+            </ul>
+        </form>
     </div>
 
-    <div class="flex-row align-self-end justify-content-center mb-3">
-        <div class="p-2">Flex item 7</div>
-        <div class="p-2">Flex item 8</div>
-        <div class="p-2">Flex item 9</div>
+    <div class="flex-column align-self-center justify-content-start mb-3">
+        <h3 class="p-2">Translate Text</h3>
+        <form id="analyze-form" action="/analyze" method="post" class="d-flex justify-content-center">
+            <ul class="list-unstyled">
+                <li>
+                    <label for="source-language" class="form-label">Source Language</label>
+                    <select class="form-select" id="source-language" name="source-language" aria-label="Translation source language">
+                        <option selected value="spanish">Spanish</option>
+                        <option value="english">English</option>
+                    </select>
+                </li>
+                <li>
+                    <label for="target-language" class="form-label">Target Language</label>
+                    <select class="form-select" id="target-language" name="target-language" aria-label="Translation target language">
+                        <option selected value="english">English</option>
+                        <option value="spanish">Spanish</option>
+                    </select>
+                </li>
+                <li>
+                    <div class="mb-3">
+                        <label for="translate-text" class="form-label">Text To Translate</label>
+                        <textarea class="form-control" id="translate-text" name="translate-text" rows="3"></textarea>
+                    </div>
+                </li>
+                <li>
+                    <button type="submit" class="btn btn-primary">Translate</button>
+                </li>
+            </ul>
+        </form>
     </div>
 </div>
 

@@ -22,6 +22,7 @@ func New() *Templates {
 		templates: map[string]*htmpl.Template{
 			"dashboard": htmpl.Must(htmpl.ParseFS(tmplFS, "templates/dashboard.html", "templates/base.html")),
 			"signup":    htmpl.Must(htmpl.ParseFS(tmplFS, "templates/signup.html", "templates/base.html")),
+			"login":     htmpl.Must(htmpl.ParseFS(tmplFS, "templates/login.html", "templates/base.html")),
 		},
 	}
 }

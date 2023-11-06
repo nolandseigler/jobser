@@ -1,12 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -14,6 +13,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	authpkg "github.com/nolandseigler/wordser/wordserweb/internal/auth"
+	"github.com/nolandseigler/wordser/wordserweb/internal/handlers"
+	"github.com/nolandseigler/wordser/wordserweb/internal/static"
+	"github.com/nolandseigler/wordser/wordserweb/internal/storage/postgres"
 	"github.com/nolandseigler/wordser/wordserweb/internal/template"
 )
 
@@ -27,14 +30,38 @@ func main() {
 	e.GET("/metrics", echoprometheus.NewHandler())
 
 	e.Renderer = template.New()
+	static.RegisterStaticFS(e)
+	
 
-	e.GET("/signup", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "signup", []string{"fucker"})
-	})
+	ctx := context.Background()
 
-	e.GET("/dashboard", func(c echo.Context) error {	
-		return c.Render(http.StatusOK, "dashboard", "")
-	})
+	dbCfg, err := postgres.ConfigFromEnv()
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+	db, err := postgres.New(ctx, dbCfg)
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+
+	authCfg, err := authpkg.ConfigFromEnv()
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+
+	auth, err := authpkg.New(ctx, authCfg, NewStore(), db)
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+	// this going to trash prom??
+	e.Use(auth.ValidateJWTMiddleWare)
+
+
+	e.GET("/signup", handlers.GetSignupHandler)
+	e.POST("/signup", handlers.PostSignupHandler(auth, db))
+	e.GET("/login", handlers.GetLoginHandler)
+	e.POST("/login", handlers.PostLoginHandler(auth, db))
+	e.GET("/dashboard", handlers.GetDashboardHandler)
 
 	// Start server
 	go func() {
@@ -50,5 +77,31 @@ func main() {
 	defer cancel()
 	if err := e.Shutdown(ctx); err != nil {
 		e.Logger.Fatal(err)
+	}
+}
+
+type TempKVStore struct {
+	store *sync.Map
+}
+
+func (t *TempKVStore) Insert(key string, value string) error {
+	t.store.Store(key, value)
+	return nil
+}
+func (t *TempKVStore) Delete(key string) error {
+	t.store.Delete(key)
+	return nil
+}
+func (t *TempKVStore) Get(key string) (string, bool) {
+	if val, ok := t.store.Load(key); ok {
+		val, ok := val.(string)
+		return val, ok
+	}
+	return "", false
+}
+
+func NewStore() *TempKVStore {
+	return &TempKVStore{
+		&sync.Map{},
 	}
 }

@@ -1,18 +1,27 @@
 {{define "title"}}Create Account{{end}}
 
 {{define "content"}}
-<h1>
+<h1 class="d-flex justify-content-center">
     Create your wordser Account
 </h1>
-<h2>
-    Experience a modern, integrated job search solution!
+<h2 class="d-flex justify-content-center">
+    Experience a modern, integrated text analysis platform solution!
 </h2>
 
-<form id="create-account-form">
-    <input type="text" name="username" id="username-field" placeholder="Username">
-    <input type="password" name="password" id="password-field" placeholder="Password">
-    <input type="password" name="confirm-password" id="confirm-password-field" placeholder="Confirm Password">
-    <input type="submit" value="Create" id="create-account-form-submit">
+<form id="create-account-form" action="/signup" method="post" class="d-flex justify-content-center">
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" name="username" id="username">
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" name="password" id="password">
+    </div>
+    <div class="mb-3">
+        <label for="confirm-password" class="form-label">Confirm Password</label>
+        <input type="password" class="form-control" id="confirm-password">
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
 </form>
 
 {{end}}

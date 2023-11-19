@@ -5,8 +5,7 @@ use axum::{
     Router,
 };
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::net::SocketAddr;
+use std::{collections::HashMap, net::SocketAddr};
 use tokio::signal;
 
 #[tokio::main]
@@ -40,17 +39,61 @@ struct GetSynonymsResp {
     synonymns: Vec<String>,
 }
 
+#[derive(Deserialize, Debug)]
+struct ThesaurusPartialResp {
+    meta: HashMap<String, serde_json::Value>,
+}
+
+#[derive(Deserialize, Debug)]
+struct ThesaurusPartialMetaInner {
+    syns: Vec<Vec<String>>,
+}
+
 async fn handler_get_synonyms(params: Query<GetSynonymsReq>) -> impl IntoResponse {
     println!("received text from wodrserweb service: {}", params.word);
     let resp = reqwest::blocking::get(format!(
         "https://www.dictionaryapi.com/api/v3/references/thesaurus/json/{}?key={}",
-        params.word, "not-real-api-key",
+        params.word, "fake",
     ));
 
-    let resp = match resp {
-        Ok(x) => x.json::<serde_json::Value>(),
-        Err(e) => {
-            println!("error: {e}");
+    if resp.is_err() {
+        println!("resp: {:#?}", resp);
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(GetSynonymsResp {
+                synonymns: Vec::new(),
+            }),
+        );
+    }
+    let resp = resp.unwrap();
+    // let txt = resp.text();
+    // println!("resp: {:#?}", txt);
+    let partial: Result<Vec<ThesaurusPartialResp>, reqwest::Error> = resp.json();
+    if partial.is_err() {
+        println!("partial: {:#?}", partial);
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(GetSynonymsResp {
+                synonymns: Vec::new(),
+            }),
+        );
+    }
+    let partial: Vec<ThesaurusPartialResp> = partial.unwrap();
+    let meta_inner: &Vec<serde_json::Value> = match partial[0].meta.get("syns") {
+        Some(m) => match m.as_array() {
+            Some(s) => s,
+            None => {
+                println!("got None instead of syns");
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(GetSynonymsResp {
+                        synonymns: Vec::new(),
+                    }),
+                );
+            }
+        },
+        None => {
+            println!("got None instead of syns");
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(GetSynonymsResp {
@@ -59,10 +102,39 @@ async fn handler_get_synonyms(params: Query<GetSynonymsReq>) -> impl IntoRespons
             );
         }
     };
-    println!("{:#?}", resp);
-    let resp = GetSynonymsResp {
-        synonymns: vec![String::from("a")],
-    };
+
+    let mut syns: Vec<String> = Vec::new();
+    for vect in meta_inner.iter() {
+        let inner_vect = match vect.as_array() {
+            Some(s) => s,
+            None => {
+                println!("got None instead of syns");
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(GetSynonymsResp {
+                        synonymns: Vec::new(),
+                    }),
+                );
+            }
+        };
+        for inner_v in inner_vect.iter() {
+            let inner_str = match inner_v.as_str() {
+                Some(s) => s,
+                None => {
+                    println!("got None instead of syns");
+                    return (
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        Json(GetSynonymsResp {
+                            synonymns: Vec::new(),
+                        }),
+                    );
+                }
+            };
+            syns.push(inner_str.to_string())
+        }
+    }
+    println!("syns: {:?}", syns);
+    let resp = GetSynonymsResp { synonymns: syns };
 
     (StatusCode::OK, Json(resp))
 }

@@ -4,20 +4,17 @@ ARG APP_NAME=wordser
 
 FROM rust:${RUST_VERSION}-slim-bookworm AS build
 
-
 WORKDIR /app
 
 RUN apt-get update \
 && apt-get install -y ca-certificates \
+libssl-dev \
+pkg-config \
 && update-ca-certificates
 
 COPY . .
 
 RUN cargo build --locked --release
-
-
-FROM debian:bookworm-slim AS final
-ARG APP_NAME
 
 ARG UID=10001
 RUN adduser \
@@ -30,11 +27,6 @@ RUN adduser \
     appuser
 USER appuser
 
-WORKDIR /
-
-COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=build /app/target/release/${APP_NAME} /wordser
-
 EXPOSE 8080
 
-ENTRYPOINT ["/wordser"]
+ENTRYPOINT ["/app/target/release/wordser"]

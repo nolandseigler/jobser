@@ -1,0 +1,797 @@
+[
+    {
+        "meta": {
+            "id": "friend",
+            "uuid": "477473ce-7a92-4239-9a58-e9d09dc21c83",
+            "src": "coll_thes",
+            "section": "alpha",
+            "target": {
+                "tuuid": "79378106-6130-485a-ae96-68f3d7ef9367",
+                "tsrc": "collegiate"
+            },
+            "stems": [
+                "friend",
+                "quaker",
+                "friendless",
+                "friendlessness",
+                "friendlessnesses",
+                "friends"
+            ],
+            "syns": [
+                [
+                    "alter ego",
+                    "amigo",
+                    "buddy",
+                    "chum",
+                    "compadre",
+                    "comrade",
+                    "confidant",
+                    "confidante",
+                    "crony",
+                    "familiar",
+                    "intimate",
+                    "mate",
+                    "musketeer",
+                    "pal"
+                ],
+                [
+                    "advocate",
+                    "advocator",
+                    "apostle",
+                    "backer",
+                    "booster",
+                    "champion",
+                    "espouser",
+                    "exponent",
+                    "expounder",
+                    "gospeler",
+                    "herald",
+                    "hierophant",
+                    "high priest",
+                    "paladin",
+                    "promoter",
+                    "proponent",
+                    "protagonist",
+                    "supporter",
+                    "true believer",
+                    "tub-thumper",
+                    "white knight"
+                ]
+            ],
+            "ants": [
+                [
+                    "enemy",
+                    "foe"
+                ],
+                [
+                    "adversary",
+                    "antagonist",
+                    "opponent"
+                ]
+            ],
+            "offensive": false
+        },
+        "hwi": {
+            "hw": "friend"
+        },
+        "fl": "noun",
+        "def": [
+            {
+                "sseq": [
+                    [
+                        [
+                            "sense",
+                            {
+                                "sn": "1",
+                                "dt": [
+                                    [
+                                        "text",
+                                        "a person who has a strong liking for and trust in another "
+                                    ],
+                                    [
+                                        "vis",
+                                        [
+                                            {
+                                                "t": "really close {it}friends{\/it} who like to do everything together and are always sharing secrets"
+                                            }
+                                        ]
+                                    ]
+                                ],
+                                "syn_list": [
+                                    [
+                                        {
+                                            "wd": "alter ego"
+                                        },
+                                        {
+                                            "wd": "amigo"
+                                        },
+                                        {
+                                            "wd": "buddy"
+                                        },
+                                        {
+                                            "wd": "chum"
+                                        },
+                                        {
+                                            "wd": "compadre"
+                                        },
+                                        {
+                                            "wd": "comrade"
+                                        },
+                                        {
+                                            "wd": "confidant"
+                                        },
+                                        {
+                                            "wd": "confidante"
+                                        },
+                                        {
+                                            "wd": "crony"
+                                        },
+                                        {
+                                            "wd": "familiar"
+                                        },
+                                        {
+                                            "wd": "intimate"
+                                        },
+                                        {
+                                            "wd": "mate",
+                                            "wsls": [
+                                                "chiefly British"
+                                            ]
+                                        },
+                                        {
+                                            "wd": "musketeer"
+                                        },
+                                        {
+                                            "wd": "pal"
+                                        }
+                                    ]
+                                ],
+                                "rel_list": [
+                                    [
+                                        {
+                                            "wd": "acquaintance"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "associate"
+                                        },
+                                        {
+                                            "wd": "cohort"
+                                        },
+                                        {
+                                            "wd": "colleague"
+                                        },
+                                        {
+                                            "wd": "companion"
+                                        },
+                                        {
+                                            "wd": "fellow"
+                                        },
+                                        {
+                                            "wd": "hearty"
+                                        },
+                                        {
+                                            "wd": "hobnobber"
+                                        },
+                                        {
+                                            "wd": "partner"
+                                        },
+                                        {
+                                            "wd": "peer"
+                                        },
+                                        {
+                                            "wd": "sport"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "blood brother"
+                                        },
+                                        {
+                                            "wd": "brother"
+                                        },
+                                        {
+                                            "wd": "main man"
+                                        },
+                                        {
+                                            "wd": "sister"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "abettor",
+                                            "wvrs": [
+                                                {
+                                                    "wvl": "also",
+                                                    "wva": "abetter"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "wd": "accomplice"
+                                        },
+                                        {
+                                            "wd": "ally"
+                                        },
+                                        {
+                                            "wd": "collaborator"
+                                        },
+                                        {
+                                            "wd": "confederate"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "pen pal"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "benefactor"
+                                        },
+                                        {
+                                            "wd": "supporter"
+                                        },
+                                        {
+                                            "wd": "sympathizer"
+                                        },
+                                        {
+                                            "wd": "well-wisher"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "friendly"
+                                        }
+                                    ]
+                                ],
+                                "near_list": [
+                                    [
+                                        {
+                                            "wd": "adversary"
+                                        },
+                                        {
+                                            "wd": "antagonist"
+                                        },
+                                        {
+                                            "wd": "competitor"
+                                        },
+                                        {
+                                            "wd": "opponent"
+                                        },
+                                        {
+                                            "wd": "rival"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "archenemy"
+                                        },
+                                        {
+                                            "wd": "nemesis"
+                                        }
+                                    ]
+                                ],
+                                "ant_list": [
+                                    [
+                                        {
+                                            "wd": "enemy"
+                                        },
+                                        {
+                                            "wd": "foe"
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    ],
+                    [
+                        [
+                            "sense",
+                            {
+                                "sn": "2",
+                                "dt": [
+                                    [
+                                        "text",
+                                        "a person who actively supports or favors a cause "
+                                    ],
+                                    [
+                                        "vis",
+                                        [
+                                            {
+                                                "t": "hopes that the new governor will be a {it}friend{\/it} to environmental causes"
+                                            }
+                                        ]
+                                    ]
+                                ],
+                                "syn_list": [
+                                    [
+                                        {
+                                            "wd": "advocate"
+                                        },
+                                        {
+                                            "wd": "advocator"
+                                        },
+                                        {
+                                            "wd": "apostle"
+                                        },
+                                        {
+                                            "wd": "backer"
+                                        },
+                                        {
+                                            "wd": "booster"
+                                        },
+                                        {
+                                            "wd": "champion"
+                                        },
+                                        {
+                                            "wd": "espouser"
+                                        },
+                                        {
+                                            "wd": "exponent"
+                                        },
+                                        {
+                                            "wd": "expounder"
+                                        },
+                                        {
+                                            "wd": "gospeler",
+                                            "wvrs": [
+                                                {
+                                                    "wvl": "or",
+                                                    "wva": "gospeller"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "wd": "herald"
+                                        },
+                                        {
+                                            "wd": "hierophant"
+                                        },
+                                        {
+                                            "wd": "high priest"
+                                        },
+                                        {
+                                            "wd": "paladin"
+                                        },
+                                        {
+                                            "wd": "promoter"
+                                        },
+                                        {
+                                            "wd": "proponent"
+                                        },
+                                        {
+                                            "wd": "protagonist"
+                                        },
+                                        {
+                                            "wd": "supporter"
+                                        },
+                                        {
+                                            "wd": "true believer"
+                                        },
+                                        {
+                                            "wd": "tub-thumper"
+                                        },
+                                        {
+                                            "wd": "white knight"
+                                        }
+                                    ]
+                                ],
+                                "rel_list": [
+                                    [
+                                        {
+                                            "wd": "loyalist"
+                                        },
+                                        {
+                                            "wd": "partisan",
+                                            "wvrs": [
+                                                {
+                                                    "wvl": "also",
+                                                    "wva": "partizan"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "wd": "stalwart"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "adherent"
+                                        },
+                                        {
+                                            "wd": "cohort"
+                                        },
+                                        {
+                                            "wd": "disciple"
+                                        },
+                                        {
+                                            "wd": "follower"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "interpreter"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "applauder"
+                                        },
+                                        {
+                                            "wd": "cheerleader"
+                                        },
+                                        {
+                                            "wd": "encourager"
+                                        },
+                                        {
+                                            "wd": "fellow traveler"
+                                        }
+                                    ]
+                                ],
+                                "near_list": [
+                                    [
+                                        {
+                                            "wd": "enemy"
+                                        },
+                                        {
+                                            "wd": "foe"
+                                        },
+                                        {
+                                            "wd": "rival"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "belittler"
+                                        },
+                                        {
+                                            "wd": "critic"
+                                        },
+                                        {
+                                            "wd": "faultfinder"
+                                        }
+                                    ]
+                                ],
+                                "ant_list": [
+                                    [
+                                        {
+                                            "wd": "adversary"
+                                        },
+                                        {
+                                            "wd": "antagonist"
+                                        },
+                                        {
+                                            "wd": "opponent"
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    ]
+                ]
+            }
+        ],
+        "shortdef": [
+            "a person who has a strong liking for and trust in another",
+            "a person who actively supports or favors a cause"
+        ]
+    },
+    {
+        "meta": {
+            "id": "friend",
+            "uuid": "9d2a3904-b24b-4165-a7b5-27283a98c7eb",
+            "src": "CTcompile",
+            "section": "alpha",
+            "stems": [
+                "friend"
+            ],
+            "syns": [
+                [
+                    "befriend",
+                    "associate",
+                    "chum",
+                    "company",
+                    "consociate",
+                    "consort",
+                    "fraternize",
+                    "hang (around or out)",
+                    "hobnob",
+                    "hook up",
+                    "mess around",
+                    "pal (around)",
+                    "run",
+                    "sort",
+                    "travel",
+                    "affiliate",
+                    "ally",
+                    "attach",
+                    "band",
+                    "bond",
+                    "club",
+                    "collaborate",
+                    "collude",
+                    "confederate",
+                    "conjoin",
+                    "connect",
+                    "cooperate",
+                    "couple",
+                    "gang",
+                    "get along",
+                    "get on",
+                    "group",
+                    "interrelate",
+                    "join",
+                    "knot",
+                    "league",
+                    "link",
+                    "mingle",
+                    "mix",
+                    "rally",
+                    "relate",
+                    "side",
+                    "socialize",
+                    "team",
+                    "tie",
+                    "wed"
+                ]
+            ],
+            "ants": [
+                [
+                    "avoid",
+                    "cold-shoulder",
+                    "shun",
+                    "snub",
+                    "alienate",
+                    "estrange",
+                    "break up",
+                    "disband",
+                    "disperse",
+                    "split (up)",
+                    "disjoin",
+                    "dissociate",
+                    "disunite",
+                    "divorce",
+                    "sever",
+                    "split",
+                    "sunder"
+                ]
+            ],
+            "offensive": false
+        },
+        "hwi": {
+            "hw": "friend"
+        },
+        "fl": "verb",
+        "def": [
+            {
+                "sseq": [
+                    [
+                        [
+                            "sense",
+                            {
+                                "dt": [
+                                    [
+                                        "text",
+                                        "as in {it}befriend{\/it}"
+                                    ]
+                                ],
+                                "sim_list": [
+                                    [
+                                        {
+                                            "wd": "befriend"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "associate"
+                                        },
+                                        {
+                                            "wd": "chum"
+                                        },
+                                        {
+                                            "wd": "company"
+                                        },
+                                        {
+                                            "wd": "consociate"
+                                        },
+                                        {
+                                            "wd": "consort"
+                                        },
+                                        {
+                                            "wd": "fraternize"
+                                        },
+                                        {
+                                            "wd": "hang (around or out)"
+                                        },
+                                        {
+                                            "wd": "hobnob"
+                                        },
+                                        {
+                                            "wd": "hook up"
+                                        },
+                                        {
+                                            "wd": "mess around"
+                                        },
+                                        {
+                                            "wd": "pal (around)"
+                                        },
+                                        {
+                                            "wd": "run"
+                                        },
+                                        {
+                                            "wd": "sort"
+                                        },
+                                        {
+                                            "wd": "travel"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "affiliate"
+                                        },
+                                        {
+                                            "wd": "ally"
+                                        },
+                                        {
+                                            "wd": "attach"
+                                        },
+                                        {
+                                            "wd": "band"
+                                        },
+                                        {
+                                            "wd": "bond"
+                                        },
+                                        {
+                                            "wd": "club"
+                                        },
+                                        {
+                                            "wd": "collaborate"
+                                        },
+                                        {
+                                            "wd": "collude"
+                                        },
+                                        {
+                                            "wd": "confederate"
+                                        },
+                                        {
+                                            "wd": "conjoin"
+                                        },
+                                        {
+                                            "wd": "connect"
+                                        },
+                                        {
+                                            "wd": "cooperate"
+                                        },
+                                        {
+                                            "wd": "couple"
+                                        },
+                                        {
+                                            "wd": "gang"
+                                        },
+                                        {
+                                            "wd": "get along"
+                                        },
+                                        {
+                                            "wd": "get on"
+                                        },
+                                        {
+                                            "wd": "group"
+                                        },
+                                        {
+                                            "wd": "interrelate"
+                                        },
+                                        {
+                                            "wd": "join"
+                                        },
+                                        {
+                                            "wd": "knot"
+                                        },
+                                        {
+                                            "wd": "league"
+                                        },
+                                        {
+                                            "wd": "link"
+                                        },
+                                        {
+                                            "wd": "mingle"
+                                        },
+                                        {
+                                            "wd": "mix"
+                                        },
+                                        {
+                                            "wd": "rally"
+                                        },
+                                        {
+                                            "wd": "relate"
+                                        },
+                                        {
+                                            "wd": "side"
+                                        },
+                                        {
+                                            "wd": "socialize"
+                                        },
+                                        {
+                                            "wd": "team"
+                                        },
+                                        {
+                                            "wd": "tie"
+                                        },
+                                        {
+                                            "wd": "wed"
+                                        }
+                                    ]
+                                ],
+                                "opp_list": [
+                                    [
+                                        {
+                                            "wd": "avoid"
+                                        },
+                                        {
+                                            "wd": "cold-shoulder"
+                                        },
+                                        {
+                                            "wd": "shun"
+                                        },
+                                        {
+                                            "wd": "snub"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "alienate"
+                                        },
+                                        {
+                                            "wd": "estrange"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "break up"
+                                        },
+                                        {
+                                            "wd": "disband"
+                                        },
+                                        {
+                                            "wd": "disperse"
+                                        },
+                                        {
+                                            "wd": "split (up)"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "wd": "disjoin"
+                                        },
+                                        {
+                                            "wd": "dissociate"
+                                        },
+                                        {
+                                            "wd": "disunite"
+                                        },
+                                        {
+                                            "wd": "divorce"
+                                        },
+                                        {
+                                            "wd": "sever"
+                                        },
+                                        {
+                                            "wd": "split"
+                                        },
+                                        {
+                                            "wd": "sunder"
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    ]
+                ]
+            }
+        ],
+        "shortdef": [
+            "as in befriend"
+        ]
+    }
+]

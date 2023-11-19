@@ -20,3 +20,5 @@
 target/
 
 docker/etc/wordserweb/keys
+
+.env

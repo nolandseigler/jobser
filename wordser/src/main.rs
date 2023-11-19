@@ -61,8 +61,6 @@ async fn handler_get_synonyms(params: Query<GetSynonymsReq>) -> impl IntoRespons
         );
     }
     let resp = resp.unwrap();
-    // let txt = resp.text();
-    // println!("resp: {:#?}", txt);
     let partial: Result<Vec<ThesaurusPartialResp>, reqwest::Error> = resp.json();
     if partial.is_err() {
         println!("partial: {:#?}", partial);

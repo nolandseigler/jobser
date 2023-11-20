@@ -15,6 +15,7 @@ The application consists of two components:
 1. Ensure that you have installed docker and `docker-compose`: https://docs.docker.com/compose/install/#scenario-one-install-docker-desktop  
 2. Ensure that you have `Make`(developed with GNU Make) installed: https://www.gnu.org/software/make/. If you are on MacOS it is probably already installed.  
 3. Ensure that you have `openssl` installed: https://www.openssl.org/. If you are on MacOS it is probably already installed.
+4. In the wordser directory, make a file named `.env`, copy the contents of `.env-example` into `.env`, and set the value for your [MERRIAM-WEBSTER'S COLLEGIATE® THESAURUS API](https://dictionaryapi.com/products/api-collegiate-thesaurus) key.
 
 ### Using Wordser
 

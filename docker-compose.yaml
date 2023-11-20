@@ -9,8 +9,10 @@ services:
       POSTGRES_PASSWORD: wordser
       POSTGRES_DB: wordser
       POSTGRES_USER: wordser
+    networks:
+      - wordser
     ports:
-    - "127.0.0.1:5555:5432"
+      - "127.0.0.1:5555:5432"
     volumes:
       - db-data:/var/lib/posgresql/data
       - ./docker/initdb.d:/docker-entrypoint-initdb.d/
@@ -19,6 +21,8 @@ services:
       context: ./wordser
       dockerfile: Dockerfile
     image: wordser:compose
+    networks:
+      - wordser
   web:
     depends_on:
       - db
@@ -31,10 +35,16 @@ services:
       POSTGRES_PASSWORD: wordser
       POSTGRES_DB: wordser
       POSTGRES_USER: wordser
+    networks:
+      - wordser
     ports:
-    - "127.0.0.1:8980:8080"
+      - "127.0.0.1:8980:8080"
     volumes:
       - ./docker/etc/wordserweb:/etc/wordserweb
+
+networks:
+  wordser:
+    name: wordser
 
 volumes:
   db-data:

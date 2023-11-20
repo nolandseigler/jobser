@@ -29,7 +29,7 @@ make up
 3. Use the dashboard at http://localhost:8980/dashboard
 
 4. To use the wordser service without wordser web  
-    a. run wordser in docker-compose
+    a. run wordser in docker-compose  
     b. add the external network `wordser` to your compose file and add that network to your services  
     c. refs: https://docs.docker.com/compose/networking/#use-a-pre-existing-network, https://docs.docker.com/compose/networking/#specify-custom-networks  
 

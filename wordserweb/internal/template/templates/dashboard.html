@@ -6,31 +6,7 @@
 </h1>
 
 <div class="d-flex flex-row justify-content-around mb-3">
-    <div class="flex-column align-self-start justify-content-start mb-3">
-        <h3 class="p-2">Saved Results</h3>
-        <div class="card text-bg-primary border-dark" style="width: 18rem;">
-            <div class="card-header">
-                Lorem Ipsum Some Saved Analysis 1
-            </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">An item</li>
-                <li class="list-group-item">A second item</li>
-                <li class="list-group-item">A third item</li>
-            </ul>
-        </div>
-        <div class="card text-bg-primary border-dark" style="width: 18rem;">
-            <div class="card-header">
-                Lorem Ipsum Some Saved Analysis 2
-            </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">An item</li>
-                <li class="list-group-item">A second item</li>
-                <li class="list-group-item">A third item</li>
-            </ul>
-        </div>
-    </div>
-
-    <div id="analyze-form-and-data" class="flex-column align-self-center justify-content-start mb-3">
+    <div id="analyze-form-and-data" class="flex-column align-self-start justify-content-start mb-3">
         <h3 class="p-2">Analyze English Text</h3>
         <form id="analyze-form" hx-get="/analyze" class="d-flex justify-content-center">
             <ul class="list-unstyled">
@@ -72,7 +48,7 @@
         </form>
     </div>
 
-    <div id="translate-form-and-data" class="flex-column align-self-center justify-content-start mb-3">
+    <div id="translate-form-and-data" class="flex-column align-self-start justify-content-start mb-3">
         <h3 class="p-2">Translate Text</h3>
         <form id="translate-form" hx-get="/translate" hx-target="#translate-form" hx-swap="afterend"
             hx-params="source-language,target-language,translate-text" class="d-flex justify-content-center">

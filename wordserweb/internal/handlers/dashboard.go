@@ -161,16 +161,17 @@ func GetTranslateHandler(c echo.Context) error {
 		http.StatusOK,
 		fmt.Sprintf(
 			`
-			<div>
-				<p>Source Language: %s</p>
-				<p>Source Text: %s</p>
-				<p>Translated Language: %s</p>
-				<p>Translated Text: %s</p>
+			<div class="card" style="width: 18rem;">
+				<div class="card-body">
+					<h5 class="card-title">%s -> %s</h5>
+					<h6 class="card-subtitle mb-2 text-muted">Original Text: %s</h6>
+					<p class="card-text font-weight-bold">Translated Text: %s</p>
+				</div>
 			</div>
 			`,
 			sourceLangName,
-			params.TranslateText,
 			targLangName,
+			params.TranslateText,
 			transResp.TranslatedText,
 		),
 	)

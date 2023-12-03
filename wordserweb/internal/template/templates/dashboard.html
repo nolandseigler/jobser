@@ -30,13 +30,14 @@
         </div>
     </div>
 
-    <div class="flex-column align-self-center justify-content-start mb-3">
+    <div id="analyze-form-and-data" class="flex-column align-self-center justify-content-start mb-3">
         <h3 class="p-2">Analyze English Text</h3>
-        <form id="analyze-form" action="/analyze" method="post" class="d-flex justify-content-center">
+        <form id="analyze-form" hx-get="/analyze" class="d-flex justify-content-center">
             <ul class="list-unstyled">
                 <li>
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="summarzie" name="summarize" checked>
+                        <input class="form-check-input" type="checkbox" role="switch" id="summarzie" name="summarize"
+                            checked>
                         <label class="form-check-label" for="summarzie">Summarize</label>
                     </div>
                 </li>
@@ -71,22 +72,25 @@
         </form>
     </div>
 
-    <div class="flex-column align-self-center justify-content-start mb-3">
+    <div id="translate-form-and-data" class="flex-column align-self-center justify-content-start mb-3">
         <h3 class="p-2">Translate Text</h3>
-        <form id="analyze-form" action="/analyze" method="post" class="d-flex justify-content-center">
+        <form id="translate-form" hx-get="/translate" hx-target="#translate-form" hx-swap="afterend"
+            hx-params="source-language,target-language,translate-text" class="d-flex justify-content-center">
             <ul class="list-unstyled">
                 <li>
                     <label for="source-language" class="form-label">Source Language</label>
-                    <select class="form-select" id="source-language" name="source-language" aria-label="Translation source language">
-                        <option selected value="spanish">Spanish</option>
-                        <option value="english">English</option>
+                    <select class="form-select" id="source-language" name="source-language"
+                        aria-label="Translation source language">
+                        <option selected value="es">Spanish</option>
+                        <option value="en">English</option>
                     </select>
                 </li>
                 <li>
                     <label for="target-language" class="form-label">Target Language</label>
-                    <select class="form-select" id="target-language" name="target-language" aria-label="Translation target language">
-                        <option selected value="english">English</option>
-                        <option value="spanish">Spanish</option>
+                    <select class="form-select" id="target-language" name="target-language"
+                        aria-label="Translation target language">
+                        <option selected value="en">English</option>
+                        <option value="es">Spanish</option>
                     </select>
                 </li>
                 <li>

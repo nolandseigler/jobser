@@ -6,11 +6,16 @@ FROM rust:${RUST_VERSION}-slim-bookworm AS build
 
 WORKDIR /app
 
+# if things start breaking the rust crate is why we need pytorch.
+# zero effort has been put into keeping them in sync.
+# https://github.com/guillaume-be/rust-bert#manual-installation-recommended
 RUN apt-get update \
-&& apt-get install -y ca-certificates \
-libssl-dev \
-pkg-config \
-&& update-ca-certificates
+    && apt-get upgrade \
+    && apt-get install -y ca-certificates \
+    libssl-dev \
+    pkg-config \
+    python3-pip \
+    && update-ca-certificates
 
 COPY . .
 

@@ -4,6 +4,23 @@ A rust service that provides text analysis features such as:
     a. synonyms for a word using MERRIAM-WEBSTER'S COLLEGIATE® THESAURUS API  
     b. text summarization, sentiment analysis, keyword extraction, and token unmasking using this wonderful rust crate: https://github.com/guillaume-be/rust-bert  
 
+<p>
+<details>
+<summary>rust-bert</summary>
+<pre>
+@inproceedings{becquin-2020-end,
+    title = "End-to-end {NLP} Pipelines in Rust",
+    author = "Becquin, Guillaume",
+    booktitle = "Proceedings of Second Workshop for NLP Open Source Software (NLP-OSS)",
+    year = "2020",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/2020.nlposs-1.4",
+    pages = "20--25",
+}
+</pre>
+</details>
+</p>
+
 ## Getting Started
 
 See the README in the project root. Wordser is run with docker and primarily accessed via wordser web. Any additional services can call wordser web by joining the docker network.

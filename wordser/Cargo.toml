@@ -11,6 +11,7 @@ dotenv = "0.15.0"
 hyper = "0.14.27"
 openssl = "0.10.59"
 reqwest = { version = "0.11.22", features = ["blocking", "json", "serde_json"] }
+rust-bert = { version = "0.21.0", features = ["download-libtorch"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.108"
 tokio = { version = "1", features = ["full"] }

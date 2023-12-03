@@ -17,6 +17,14 @@ RUN apt-get update \
     python3-pip \
     && update-ca-certificates
 
+# this is what is busted so isolate it
+RUN pip3 install torch==2.0.0 --index-url https://download.pytorch.org/whl/cpu --break-system-packages
+# RUN apt-get install -y python3-torch
+
+ENV LIBTORCH_USE_PYTORCH=1 \
+    LIBTORCH=/usr/local/lib/python3.11/dist-packages/torch \
+    LD_LIBRARY_PATH=/usr/local/lib/python3.11/dist-packages/torch/lib:$LD_LIBRARY_PATH
+
 COPY . .
 
 RUN cargo build --locked --release
@@ -35,3 +43,4 @@ USER appuser
 EXPOSE 8080
 
 ENTRYPOINT ["/app/target/release/wordser"]
+# ENTRYPOINT ["sleep", "10m"]

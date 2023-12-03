@@ -2,6 +2,7 @@
 
 use axum::{extract::Query, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 use dotenv::dotenv;
+use rust_bert::pipelines::summarization::SummarizationModel;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, env, net::SocketAddr};
 use tokio::signal;
@@ -13,7 +14,9 @@ async fn main() {
     // to my lack of rust syntax experience. we want this to explode on start not when endpoint is called
     env::var("WEBSTER_THESAURUS_API_KEY").expect("WEBSTER_THESAURUS_API_KEY not in env");
     // build our application with a route
-    let app = Router::new().route("/api/v1/synonyms", get(handler_get_synonyms));
+    let app = Router::new()
+        .route("/api/v1/synonyms", get(handler_get_synonyms))
+        .route("/api/v1/summary", get(handler_get_summary));
 
     // run it
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
@@ -130,6 +133,67 @@ async fn handler_get_synonyms(params: Query<GetSynonymsReq>) -> impl IntoRespons
     let resp = GetSynonymsResp { synonymns: syns };
 
     (StatusCode::OK, Json(resp))
+}
+
+#[derive(Debug, Deserialize)]
+struct GetSummaryReq {
+    txt: String,
+}
+
+#[derive(Debug, Serialize)]
+struct GetSummaryResp {
+    summary: String,
+}
+
+async fn handler_get_summary(params: Query<GetSummaryReq>) -> impl IntoResponse {
+    println!("txt to summarize: {:?}", params.txt);
+    // TODO: This is probably stupid slow but idk how to use a closure or something to build this
+    // during startup and pass it in......
+    let summarization_model = match SummarizationModel::new(Default::default()) {
+        Ok(m) => m,
+        Err(_) => {
+            println!("got None instead of syns");
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(GetSummaryResp {
+                    summary: String::new(),
+                }),
+            );
+        }
+    };
+
+    let input = ["In findings published Tuesday in Cornell University's arXiv by a team of scientists \
+    from the University of Montreal and a separate report published Wednesday in Nature Astronomy by a team \
+    from University College London (UCL), the presence of water vapour was confirmed in the atmosphere of K2-18b, \
+    a planet circling a star in the constellation Leo. This is the first such discovery in a planet in its star's \
+    habitable zone — not too hot and not too cold for liquid water to exist. The Montreal team, led by Björn Benneke, \
+    used data from the NASA's Hubble telescope to assess changes in the light coming from K2-18b's star as the planet \
+    passed between it and Earth. They found that certain wavelengths of light, which are usually absorbed by water, \
+    weakened when the planet was in the way, indicating not only does K2-18b have an atmosphere, but the atmosphere \
+    contains water in vapour form. The team from UCL then analyzed the Montreal team's data using their own software \
+    and confirmed their conclusion. This was not the first time scientists have found signs of water on an exoplanet, \
+    but previous discoveries were made on planets with high temperatures or other pronounced differences from Earth. \
+    \"This is the first potentially habitable planet where the temperature is right and where we now know there is water,\" \
+    said UCL astronomer Angelos Tsiaras. \"It's the best candidate for habitability right now.\" \"It's a good sign\", \
+    said Ryan Cloutier of the Harvard–Smithsonian Center for Astrophysics, who was not one of either study's authors. \
+    \"Overall,\" he continued, \"the presence of water in its atmosphere certainly improves the prospect of K2-18b being \
+    a potentially habitable planet, but further observations will be required to say for sure. \"
+    K2-18b was first identified in 2015 by the Kepler space telescope. It is about 110 light-years from Earth and larger \
+    but less dense. Its star, a red dwarf, is cooler than the Sun, but the planet's orbit is much closer, such that a year \
+    on K2-18b lasts 33 Earth days. According to The Guardian, astronomers were optimistic that NASA's James Webb space \
+    telescope — scheduled for launch in 2021 — and the European Space Agency's 2028 ARIEL program, could reveal more \
+    about exoplanets like K2-18b."];
+
+    let output = summarization_model.summarize(&input);
+
+    println!("summary: {:?}", output);
+
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        Json(GetSummaryResp {
+            summary: output[0].to_string(),
+        }),
+    )
 }
 
 async fn shutdown_signal() {

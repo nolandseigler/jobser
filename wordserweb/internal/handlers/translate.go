@@ -124,8 +124,6 @@ func GetTranslateHandler(c echo.Context) error {
 		)
 	}
 
-	// TODO: remove me. this is partner's micorservice.
-	// after course just use wordser translate
 	resp, err := http.Get(
 		fmt.Sprintf(
 			"http://backend:5000/translate?inputText=%s&sourceLanguage=%s&targetLanguage=%s",

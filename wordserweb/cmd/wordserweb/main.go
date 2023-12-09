@@ -62,6 +62,7 @@ func main() {
 	e.GET("/login", handlers.GetLoginHandler)
 	e.POST("/login", handlers.PostLoginHandler(auth, db))
 	e.GET("/dashboard", handlers.GetDashboardHandler)
+	e.GET("/translate", handlers.GetTranslateHandler)
 
 	// Start server
 	go func() {

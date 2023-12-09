@@ -61,9 +61,8 @@ type JWTClaims struct {
 
 // destroySession -> KeyValStorer.Delete(jti)
 func (a *Auth) destroySesion(ctx context.Context, jti uuid.UUID) error {
-	err := a.kvStore.Delete(jti.String())
-	// TODO: maybe handle me
-	if err != nil {
+
+	if err := a.kvStore.Delete(jti.String()); err != nil {
 		return err
 	}
 	return nil
@@ -71,9 +70,8 @@ func (a *Auth) destroySesion(ctx context.Context, jti uuid.UUID) error {
 
 // storeSession -> KeyValStorer.Insert(jti)
 func (a *Auth) storeSession(ctx context.Context, jti uuid.UUID) error {
-	err := a.kvStore.Insert(jti.String(), "")
-	// TODO: maybe handle me
-	if err != nil {
+	
+	if err := a.kvStore.Insert(jti.String(), ""); err != nil {
 		return err
 	}
 	return nil
@@ -81,6 +79,7 @@ func (a *Auth) storeSession(ctx context.Context, jti uuid.UUID) error {
 
 // validateSession -> KeyValStorer.Get(jti)
 func (a *Auth) validateSession(ctx context.Context, jti uuid.UUID) error {
+
 	if _, ok := a.kvStore.Get(jti.String()); !ok {
 		return fmt.Errorf("no valid session")
 	}
@@ -116,7 +115,7 @@ func (a *Auth) mintJWT(ctx context.Context, userCtx UserContext) (string, uuid.U
 
 // newJWT -> mintJwt, and storeSession
 func (a *Auth) newJWT(ctx context.Context, username string) (string, uuid.UUID, error) {
-	// TODO: Lookup user context
+
 	jwt, jti, err := a.mintJWT(
 		ctx,
 		UserContext{
@@ -251,9 +250,6 @@ func (a *Auth) ValidateJWTMiddleWare(next echo.HandlerFunc) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "invalid credentials")
 		}
-
-		// TODO: If I end up doing perms per endpoint then put a sync.Map in *Auth that maps endpoint to all []Perms
-		// or something.
 
 		if sessionCookie.Value == jwt {
 			return next(c)

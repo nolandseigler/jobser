@@ -2,6 +2,7 @@
 
 use axum::{extract::Query, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 use dotenv::dotenv;
+use rust_bert::pipelines::summarization::SummarizationModel;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, env, net::SocketAddr};
 use tokio::signal;
@@ -9,11 +10,15 @@ use tokio::signal;
 #[tokio::main]
 async fn main() {
     dotenv().unwrap();
-    // TODO: we would want to pass this into a handler but that proved to be a time suck due
-    // to my lack of rust syntax experience. we want this to explode on start not when endpoint is called
     env::var("WEBSTER_THESAURUS_API_KEY").expect("WEBSTER_THESAURUS_API_KEY not in env");
+
+    println!("download files and init models this may take 20 minutes");
+    SummarizationModel::new(Default::default()).expect("could not init summarization model");
+
     // build our application with a route
-    let app = Router::new().route("/api/v1/synonyms", get(handler_get_synonyms));
+    let app = Router::new()
+        .route("/api/v1/synonyms", get(handler_get_synonyms))
+        .route("/api/v1/summary", get(handler_get_summary));
 
     // run it
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
@@ -42,9 +47,7 @@ struct ThesaurusPartialResp {
 
 async fn handler_get_synonyms(params: Query<GetSynonymsReq>) -> impl IntoResponse {
     println!("received text from wodrserweb service: {}", params.word);
-    // TODO: I dont want to read from env everytime and I tried to use a closure to inject
-    // the api-key during handler creation but it was too much of a pain
-    // to try to do something that simple.
+
     let resp = reqwest::blocking::get(format!(
         "https://www.dictionaryapi.com/api/v3/references/thesaurus/json/{}?key={}",
         params.word,
@@ -130,6 +133,46 @@ async fn handler_get_synonyms(params: Query<GetSynonymsReq>) -> impl IntoRespons
     let resp = GetSynonymsResp { synonymns: syns };
 
     (StatusCode::OK, Json(resp))
+}
+
+#[derive(Debug, Deserialize)]
+struct GetSummaryReq {
+    txt: String,
+}
+
+#[derive(Debug, Serialize)]
+struct GetSummaryResp {
+    summary: String,
+}
+
+async fn handler_get_summary(params: Query<GetSummaryReq>) -> impl IntoResponse {
+    println!("txt to summarize: {:?}", params.txt);
+
+    let summarization_model = match SummarizationModel::new(Default::default()) {
+        Ok(m) => m,
+        Err(_) => {
+            println!("got None instead of syns");
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(GetSummaryResp {
+                    summary: String::new(),
+                }),
+            );
+        }
+    };
+
+    let input = [&params.txt];
+
+    let output = summarization_model.summarize(&input);
+
+    println!("summary: {:?}", output);
+
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        Json(GetSummaryResp {
+            summary: output[0].to_string(),
+        }),
+    )
 }
 
 async fn shutdown_signal() {

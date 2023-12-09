@@ -10,11 +10,8 @@ use tokio::signal;
 #[tokio::main]
 async fn main() {
     dotenv().unwrap();
-    // TODO: we would want to pass this into a handler but that proved to be a time suck due
-    // to my lack of rust syntax experience. we want this to explode on start not when endpoint is called
     env::var("WEBSTER_THESAURUS_API_KEY").expect("WEBSTER_THESAURUS_API_KEY not in env");
 
-    // TODO: In future consider doing this in the docker image build so we dont take 15 minutes to startup
     println!("download files and init models this may take 20 minutes");
     SummarizationModel::new(Default::default()).expect("could not init summarization model");
 
@@ -50,9 +47,7 @@ struct ThesaurusPartialResp {
 
 async fn handler_get_synonyms(params: Query<GetSynonymsReq>) -> impl IntoResponse {
     println!("received text from wodrserweb service: {}", params.word);
-    // TODO: I dont want to read from env everytime and I tried to use a closure to inject
-    // the api-key during handler creation but it was too much of a pain
-    // to try to do something that simple.
+
     let resp = reqwest::blocking::get(format!(
         "https://www.dictionaryapi.com/api/v3/references/thesaurus/json/{}?key={}",
         params.word,
@@ -152,8 +147,7 @@ struct GetSummaryResp {
 
 async fn handler_get_summary(params: Query<GetSummaryReq>) -> impl IntoResponse {
     println!("txt to summarize: {:?}", params.txt);
-    // TODO: This is probably stupid slow but idk how to use a closure or something to build this
-    // during startup and pass it in......
+
     let summarization_model = match SummarizationModel::new(Default::default()) {
         Ok(m) => m,
         Err(_) => {

@@ -21,6 +21,7 @@ services:
       context: ./wordser
       dockerfile: Dockerfile
     image: wordser:compose
+    restart: always
     networks:
       - wordser
     ports:
@@ -34,6 +35,7 @@ services:
       context: ./wordserweb
       dockerfile: Dockerfile
     image: wordserweb:compose
+    restart: always
     environment:
       POSTGRES_PASSWORD: wordser
       POSTGRES_DB: wordser

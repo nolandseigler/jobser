@@ -59,8 +59,8 @@ type AnalyzeData struct {
 
 func GetAnalyzeHandler(c echo.Context) error {
 	var params GetAnalyzeHandlerReq
-	err := c.Bind(&params)
-	if err != nil {
+
+	if err := c.Bind(&params); err != nil {
 		return c.String(
 			http.StatusBadRequest,
 			fmt.Sprintf(
@@ -98,141 +98,164 @@ func GetAnalyzeHandler(c echo.Context) error {
 
 	if params.Summarize == "on" {
 		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			resp, err := http.Get(
-				fmt.Sprintf(
-					"http://wordser:8080/api/v1/summary?txt=%s",
-					txt,
-				),
-			)
-			fmt.Printf("\n\n summarize resp: %v, err: %v \n\n", resp, err)
-			if err != nil {
-				respChan <- APIResponse{
-					api: supportedAPISummary,
-					err: err,
-				}
-				return
-			}
-			defer resp.Body.Close()
-			if resp.StatusCode != http.StatusOK {
-				respChan <- APIResponse{
-					api: supportedAPISummary,
-					err: fmt.Errorf("failed to get summary; statusCode: %d", resp.StatusCode),
-				}
-				return
-			}
-
-			data, err := io.ReadAll(resp.Body)
-			if err != nil {
-				respChan <- APIResponse{
-					api: supportedAPISummary,
-					err: err,
-				}
-				return
-			}
-
-			respChan <- APIResponse{
-				api:  supportedAPISummary,
-				data: data,
-				err:  nil,
-			}
-		}()
+		go doSummaryRequest(wg, txt, respChan)
 	}
 
 	if params.Sentiment == "on" {
 		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			resp, err := http.Get(
-				fmt.Sprintf(
-					"http://wordser:8080/api/v1/sentiment?txt=%s",
-					txt,
-				),
-			)
-			fmt.Printf("\n\n sentiment resp: %v, err: %v \n\n", resp, err)
-			if err != nil {
-				respChan <- APIResponse{
-					api: supportedAPISentiment,
-					err: err,
-				}
-				return
-			}
-			defer resp.Body.Close()
-			if resp.StatusCode != http.StatusOK {
-				respChan <- APIResponse{
-					api: supportedAPISentiment,
-					err: fmt.Errorf("failed to get sentiment; statusCode: %d", resp.StatusCode),
-				}
-				return
-			}
-
-			data, err := io.ReadAll(resp.Body)
-			if err != nil {
-				respChan <- APIResponse{
-					api: supportedAPISentiment,
-					err: err,
-				}
-				return
-			}
-
-			respChan <- APIResponse{
-				api:  supportedAPISentiment,
-				data: data,
-				err:  nil,
-			}
-		}()
+		go doSentimentRequest(wg, txt, respChan)
 	}
 
 	if params.Keyword == "on" {
 		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			resp, err := http.Get(
-				fmt.Sprintf(
-					"http://wordser:8080/api/v1/extract?txt=%s",
-					txt,
-				),
-			)
-			fmt.Printf("\n\n keyword resp: %v, err: %v \n\n", resp, err)
-			if err != nil {
-				respChan <- APIResponse{
-					api: supportedAPIKeyword,
-					err: err,
-				}
-				return
-			}
-			defer resp.Body.Close()
-			if resp.StatusCode != http.StatusOK {
-				respChan <- APIResponse{
-					api: supportedAPIKeyword,
-					err: fmt.Errorf("failed to get extracted keywords; statusCode: %d", resp.StatusCode),
-				}
-				return
-			}
-
-			data, err := io.ReadAll(resp.Body)
-			if err != nil {
-				respChan <- APIResponse{
-					api: supportedAPIKeyword,
-					err: err,
-				}
-				return
-			}
-
-			respChan <- APIResponse{
-				api:  supportedAPIKeyword,
-				data: data,
-				err:  nil,
-			}
-		}()
+		go doKeywordRequest(wg, txt, respChan)
 	}
 
 	wg.Wait()
 	close(respChan)
 
+	analysisData, err := newAnalyzeDataFromResps(
+		params.AnalyzeText,
+		respChan,
+	)
+	if err != nil {
+		return c.String(
+			http.StatusInternalServerError,
+			err.Error(),
+		)
+	}
+
+	fmt.Printf("\n\n analysisData: %v \n\n", analysisData)
+
+	return c.Render(http.StatusOK, "analysis", analysisData)
+}
+
+func doSummaryRequest(wg *sync.WaitGroup, txt string, respChan chan<- APIResponse) {
+	defer wg.Done()
+	resp, err := http.Get(
+		fmt.Sprintf(
+			"http://wordser:8080/api/v1/summary?txt=%s",
+			txt,
+		),
+	)
+	fmt.Printf("\n\n summarize resp: %v, err: %v \n\n", resp, err)
+	if err != nil {
+		respChan <- APIResponse{
+			api: supportedAPISummary,
+			err: err,
+		}
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		respChan <- APIResponse{
+			api: supportedAPISummary,
+			err: fmt.Errorf("failed to get summary; statusCode: %d", resp.StatusCode),
+		}
+		return
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respChan <- APIResponse{
+			api: supportedAPISummary,
+			err: err,
+		}
+		return
+	}
+
+	respChan <- APIResponse{
+		api:  supportedAPISummary,
+		data: data,
+		err:  nil,
+	}
+}
+
+func doSentimentRequest(wg *sync.WaitGroup, txt string, respChan chan<- APIResponse) {
+	defer wg.Done()
+	resp, err := http.Get(
+		fmt.Sprintf(
+			"http://wordser:8080/api/v1/sentiment?txt=%s",
+			txt,
+		),
+	)
+	fmt.Printf("\n\n sentiment resp: %v, err: %v \n\n", resp, err)
+	if err != nil {
+		respChan <- APIResponse{
+			api: supportedAPISentiment,
+			err: err,
+		}
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		respChan <- APIResponse{
+			api: supportedAPISentiment,
+			err: fmt.Errorf("failed to get sentiment; statusCode: %d", resp.StatusCode),
+		}
+		return
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respChan <- APIResponse{
+			api: supportedAPISentiment,
+			err: err,
+		}
+		return
+	}
+
+	respChan <- APIResponse{
+		api:  supportedAPISentiment,
+		data: data,
+		err:  nil,
+	}
+}
+
+func doKeywordRequest(wg *sync.WaitGroup, txt string, respChan chan<- APIResponse) {
+	defer wg.Done()
+	resp, err := http.Get(
+		fmt.Sprintf(
+			"http://wordser:8080/api/v1/extract?txt=%s",
+			txt,
+		),
+	)
+	fmt.Printf("\n\n keyword resp: %v, err: %v \n\n", resp, err)
+	if err != nil {
+		respChan <- APIResponse{
+			api: supportedAPIKeyword,
+			err: err,
+		}
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		respChan <- APIResponse{
+			api: supportedAPIKeyword,
+			err: fmt.Errorf("failed to get extracted keywords; statusCode: %d", resp.StatusCode),
+		}
+		return
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respChan <- APIResponse{
+			api: supportedAPIKeyword,
+			err: err,
+		}
+		return
+	}
+
+	respChan <- APIResponse{
+		api:  supportedAPIKeyword,
+		data: data,
+		err:  nil,
+	}
+}
+
+func newAnalyzeDataFromResps(originalText string, respChan <-chan APIResponse) (AnalyzeData, error) {
 	analysisData := AnalyzeData{
-		OriginalText: params.AnalyzeText,
+		OriginalText: originalText,
 	}
 
 	for resp := range respChan {
@@ -242,10 +265,7 @@ func GetAnalyzeHandler(c echo.Context) error {
 				"failed get response from api: %v;",
 				resp.api,
 			)
-			return c.String(
-				http.StatusInternalServerError,
-				"failed to unmarshal Summary API response",
-			)
+			return analysisData, fmt.Errorf("failed get response from api")
 		}
 		switch resp.api {
 		case supportedAPISummary:
@@ -255,10 +275,7 @@ func GetAnalyzeHandler(c echo.Context) error {
 					"failed to unmarshal Summary API response: %v;",
 					resp.data,
 				)
-				return c.String(
-					http.StatusInternalServerError,
-					"failed to unmarshal Summary API response",
-				)
+				return analysisData, fmt.Errorf("failed to unmarshal Summary API response")
 			}
 		case supportedAPISentiment:
 			analysisData.Sentiment = &SentimentAPIResp{}
@@ -267,10 +284,7 @@ func GetAnalyzeHandler(c echo.Context) error {
 					"failed to unmarshal Sentiment API response: %v;",
 					resp.data,
 				)
-				return c.String(
-					http.StatusInternalServerError,
-					"failed to unmarshal Sentiment API response",
-				)
+				return analysisData, fmt.Errorf("failed to unmarshal Sentiment API response")
 			}
 		case supportedAPIKeyword:
 			analysisData.Keywords = &KeywordAPIResp{}
@@ -279,15 +293,9 @@ func GetAnalyzeHandler(c echo.Context) error {
 					"failed to unmarshal Keyword API response: %v;",
 					resp.data,
 				)
-				return c.String(
-					http.StatusInternalServerError,
-					"failed to unmarshal Keyword API response",
-				)
+				return analysisData, fmt.Errorf("failed to unmarshal Keyword API response")
 			}
 		}
 	}
-
-	fmt.Printf("\n\n analysisData: %v \n\n", analysisData)
-
-	return c.Render(http.StatusOK, "analysis", analysisData)
+	return analysisData, nil
 }

@@ -9,7 +9,7 @@
     <div id="analyze-form-and-data" class="flex-column align-self-start justify-content-start mb-3">
         <h3 class="p-2">Analyze English Text</h3>
         <form id="analyze-form" hx-get="/analyze" hx-target="#analyze-form" hx-swap="afterend"
-        hx-params="summarize,sentiment,keyword,unmask,analyze-text" class="d-flex justify-content-center">
+            hx-params="summarize,sentiment,keyword,analyze-text" class="d-flex justify-content-center">
             <ul class="list-unstyled">
                 <li>
                     <div class="form-check form-switch">
@@ -31,19 +31,14 @@
                     </div>
                 </li>
                 <li>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="unmask" name="unmask">
-                        <label class="form-check-label" for="unmask">Unmask Tokens</label>
-                    </div>
-                </li>
-                <li>
                     <div class="mb-3">
                         <label for="analyze-text" class="form-label">Text To Analyze</label>
                         <textarea class="form-control" id="analyze-text" name="analyze-text" rows="3"></textarea>
                     </div>
                 </li>
                 <li>
-                    <button type="submit" class="btn btn-primary">Analyze</button>
+                    <button type="submit" class="btn btn-primary" hx-indicator="#analyze-spinner">Analyze</button>
+                    <img id="analyze-spinner" class="htmx-indicator" src="/static/bars.svg" />
                 </li>
             </ul>
         </form>
@@ -77,7 +72,8 @@
                     </div>
                 </li>
                 <li>
-                    <button type="submit" class="btn btn-primary">Translate</button>
+                    <button type="submit" class="btn btn-primary" hx-indicator="#translate-spinner">Translate</button>
+                    <img id="translate-spinner" class="htmx-indicator" src="/static/bars.svg" />
                 </li>
             </ul>
         </form>

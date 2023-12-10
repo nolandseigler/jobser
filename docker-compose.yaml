@@ -21,10 +21,15 @@ services:
       context: ./wordser
       dockerfile: Dockerfile
     image: wordser:compose
+    restart: always
+    environment:
+      RUSTBERT_CACHE: /var/cache/rustbert
     networks:
       - wordser
     ports:
       - "127.0.0.1:8981:8080"
+    volumes:
+      - models-cache:/var/cache/rustbert
 
   web:
     depends_on:
@@ -34,6 +39,7 @@ services:
       context: ./wordserweb
       dockerfile: Dockerfile
     image: wordserweb:compose
+    restart: always
     environment:
       POSTGRES_PASSWORD: wordser
       POSTGRES_DB: wordser
@@ -51,3 +57,4 @@ networks:
 
 volumes:
   db-data:
+  models-cache:

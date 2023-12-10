@@ -22,3 +22,5 @@ target/
 docker/etc/wordserweb/keys
 
 .env
+.venv
+docker/.cache/

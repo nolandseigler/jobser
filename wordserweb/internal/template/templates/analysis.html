@@ -1,0 +1,18 @@
+<div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Analyzed Text</h5>
+        <p class="card-text font-weight-bold">Original Text: {{.OriginalText}}</p>
+        {{if .Summary}}
+        <p class="card-text font-weight-bold">Summary: {{.Summary.Summary}}</p>
+        {{end}}
+        {{if .Sentiment}}
+        <p class="card-text font-weight-bold">Sentiment Polarity: {{.Sentiment.Polarity}}</p>
+        <p class="card-text font-weight-bold">Sentiment Score: {{.Sentiment.Score}}</p>
+        {{end}}
+        {{if .Keywords}}
+        {{range .Keywords.Keywords}}
+        <p class="card-text font-weight-bold">Keyword: {{.Text}}</p>
+        {{end}}
+        {{end}}
+    </div>
+</div>

@@ -50,6 +50,13 @@ type KeywordAPIResp struct {
 	Keywords []Keyword `json:"keywords"`
 }
 
+type AnalyzeData struct {
+	OriginalText string
+	Summary      *SummaryAPIResp
+	Sentiment    *SentimentAPIResp
+	Keywords     *KeywordAPIResp
+}
+
 func GetAnalyzeHandler(c echo.Context) error {
 	var params GetAnalyzeHandlerReq
 	err := c.Bind(&params)
@@ -224,9 +231,9 @@ func GetAnalyzeHandler(c echo.Context) error {
 	wg.Wait()
 	close(respChan)
 
-	var summaryResp SummaryAPIResp
-	var sentimentResp SentimentAPIResp
-	var keywordResp KeywordAPIResp
+	analysisData := AnalyzeData{
+		OriginalText: params.AnalyzeText,
+	}
 
 	for resp := range respChan {
 		fmt.Printf("\n\n %v \n\n", resp)
@@ -242,7 +249,8 @@ func GetAnalyzeHandler(c echo.Context) error {
 		}
 		switch resp.api {
 		case supportedAPISummary:
-			if err := json.Unmarshal(resp.data, &summaryResp); err != nil {
+			analysisData.Summary = &SummaryAPIResp{}
+			if err := json.Unmarshal(resp.data, analysisData.Summary); err != nil {
 				fmt.Printf(
 					"failed to unmarshal Summary API response: %v;",
 					resp.data,
@@ -253,7 +261,8 @@ func GetAnalyzeHandler(c echo.Context) error {
 				)
 			}
 		case supportedAPISentiment:
-			if err := json.Unmarshal(resp.data, &sentimentResp); err != nil {
+			analysisData.Sentiment = &SentimentAPIResp{}
+			if err := json.Unmarshal(resp.data, analysisData.Sentiment); err != nil {
 				fmt.Printf(
 					"failed to unmarshal Sentiment API response: %v;",
 					resp.data,
@@ -264,7 +273,8 @@ func GetAnalyzeHandler(c echo.Context) error {
 				)
 			}
 		case supportedAPIKeyword:
-			if err := json.Unmarshal(resp.data, &keywordResp); err != nil {
+			analysisData.Keywords = &KeywordAPIResp{}
+			if err := json.Unmarshal(resp.data, analysisData.Keywords); err != nil {
 				fmt.Printf(
 					"failed to unmarshal Keyword API response: %v;",
 					resp.data,
@@ -277,33 +287,7 @@ func GetAnalyzeHandler(c echo.Context) error {
 		}
 	}
 
-	fmt.Printf("\n\n %v \n\n", summaryResp)
-	fmt.Printf("\n\n %v \n\n", sentimentResp)
-	fmt.Printf("\n\n %v \n\n", keywordResp)
+	fmt.Printf("\n\n analysisData: %v \n\n", analysisData)
 
-	// transResp := &TranslateResp{}
-	// json.Unmarshal(data, transResp)
-
-	// fmt.Printf("\n translated text: %v \n", transResp)
-
-	// return c.HTML(
-	// 	http.StatusOK,
-	// 	fmt.Sprintf(
-	// 		`
-	// 		<div class="card" style="width: 18rem;">
-	// 			<div class="card-body">
-	// 				<h5 class="card-title">%s -> %s</h5>
-	// 				<h6 class="card-subtitle mb-2 text-muted">Original Text: %s</h6>
-	// 				<p class="card-text font-weight-bold">Translated Text: %s</p>
-	// 			</div>
-	// 		</div>
-	// 		`,
-	// 		sourceLangName,
-	// 		targLangName,
-	// 		params.TranslateText,
-	// 		transResp.TranslatedText,
-	// 	),
-	// )
-
-	return c.Render(http.StatusOK, "dashboard", "")
+	return c.Render(http.StatusOK, "analysis", analysisData)
 }

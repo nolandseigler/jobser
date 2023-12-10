@@ -53,7 +53,7 @@ func main() {
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
-	// this going to trash prom??
+	
 	e.Use(auth.ValidateJWTMiddleWare)
 
 
@@ -63,6 +63,7 @@ func main() {
 	e.POST("/login", handlers.PostLoginHandler(auth, db))
 	e.GET("/dashboard", handlers.GetDashboardHandler)
 	e.GET("/translate", handlers.GetTranslateHandler)
+	e.GET("/analyze", handlers.GetAnalyzeHandler)
 
 	// Start server
 	go func() {

@@ -12,7 +12,6 @@ type GetAnalyzeHandlerReq struct {
 	Summarize   string `query:"summarize"`
 	Sentiment   string `query:"sentiment"`
 	Keyword     string `query:"keyword"`
-	Unmask      string `query:"unmask"`
 }
 
 func GetAnalyzeHandler(c echo.Context) error {
@@ -40,8 +39,7 @@ func GetAnalyzeHandler(c echo.Context) error {
 
 	if params.Summarize != "on" &&
 		params.Sentiment != "on" &&
-		params.Keyword != "on" &&
-		params.Unmask != "on" {
+		params.Keyword != "on" {
 		return c.String(
 			http.StatusBadRequest,
 			fmt.Sprintf(

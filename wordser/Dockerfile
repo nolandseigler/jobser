@@ -10,7 +10,7 @@ WORKDIR /app
 # zero effort has been put into keeping them in sync.
 # https://github.com/guillaume-be/rust-bert#manual-installation-recommended
 RUN apt-get update \
-    && apt-get upgrade \
+    && apt-get upgrade -y \
     && apt-get install -y ca-certificates \
     libssl-dev \
     pkg-config \
@@ -19,7 +19,6 @@ RUN apt-get update \
 
 # this is what is busted so isolate it
 RUN pip3 install torch==2.0.0 --index-url https://download.pytorch.org/whl/cpu --break-system-packages
-# RUN apt-get install -y python3-torch
 
 ENV LIBTORCH_USE_PYTORCH=1 \
     LIBTORCH=/usr/local/lib/python3.11/dist-packages/torch \
